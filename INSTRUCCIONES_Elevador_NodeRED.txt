@@ -1,0 +1,7 @@
+1) Node-RED: menu > Import > archivo Elevador_NodeRED_CORREGIDO.json. ANTES elimina la pestaña anterior 'Elevador ESP32 - Wokwi' para evitar duplicados. No borres tus otras practicas.
+2) Debes tener @flowfuse/node-red-dashboard instalado. Presiona Deploy.
+3) En Node-RED pulsa el inject 'PRUEBA LOCAL: enviar piso 2 al panel'. Abre http://127.0.0.1:1880/dashboard/elevador. Debe indicar origen PRUEBA LOCAL. Esto NO prueba MQTT ni mueve el ESP32.
+4) En Wokwi pega Elevador_ESP32_CORREGIDO.ino en wifi-scan.ino y coloca PubSubClient en libraries.txt. Mantén el diagram.json que ya mueve el motor. Inicia la simulación y revisa monitor serial.
+5) Busca 'MQTT CONECTADO' en serial. En Node-RED revisa 'Mensajes entrantes' y 'Datos interpretados'. Si el MQTT in indica connected pero no hay mensajes, es posible que Wokwi no publique o topic diferente.
+6) Comprueba en ambos extremos EXACTAMENTE estos topics: elevador/isc2026/equipo01/estado y elevador/isc2026/equipo01/comando. Cambia equipo01 por un identificador propio en AMBOS archivos si hay interferencias en el broker publico.
+7) No usar como sistema de seguridad fisico. Tras un paro debe reiniciarse desde piso 1. La alimentacion del motor y corte de seguridad fisico no estan implementados.
