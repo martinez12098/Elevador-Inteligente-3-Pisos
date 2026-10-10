@@ -1,0 +1,274 @@
+{
+  "version": 1,
+  "author": "Jesus Eduardo Martinez Tinajero y Espindola Juarez Doraly",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "wokwi-esp32-devkit-v1",
+      "id": "esp",
+      "top": 40,
+      "left": 70,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "b1",
+      "top": -110,
+      "left": -200,
+      "attrs": {
+        "color": "green",
+        "label": "PISO 1",
+        "bounce": "0"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "b2",
+      "top": -25,
+      "left": -200,
+      "attrs": {
+        "color": "blue",
+        "label": "PISO 2",
+        "bounce": "0"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "b3",
+      "top": 60,
+      "left": -200,
+      "attrs": {
+        "color": "yellow",
+        "label": "PISO 3",
+        "bounce": "0"
+      }
+    },
+    {
+      "type": "wokwi-slide-switch",
+      "id": "stop",
+      "top": 235,
+      "left": -200,
+      "attrs": {
+        "bounce": "0"
+      }
+    },
+    {
+      "type": "wokwi-a4988",
+      "id": "drv",
+      "top": 65,
+      "left": 395,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-stepper-motor",
+      "id": "motor",
+      "top": -155,
+      "left": 420,
+      "attrs": {
+        "display": "steps",
+        "arrow": "orange"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 350,
+      "left": 355,
+      "attrs": {
+        "value": "220"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "verde",
+      "top": 340,
+      "left": 565,
+      "attrs": {
+        "color": "green",
+        "label": "MOVIMIENTO"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r2",
+      "top": 470,
+      "left": 355,
+      "attrs": {
+        "value": "220"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "rojo",
+      "top": 460,
+      "left": 565,
+      "attrs": {
+        "color": "red",
+        "label": "EMERGENCIA"
+      }
+    }
+  ],
+  "connections": [
+    [
+      "esp:D32",
+      "b1:1.l",
+      "green",
+      []
+    ],
+    [
+      "b1:2.l",
+      "esp:GND.1",
+      "black",
+      []
+    ],
+    [
+      "esp:D33",
+      "b2:1.l",
+      "blue",
+      []
+    ],
+    [
+      "b2:2.l",
+      "esp:GND.1",
+      "black",
+      []
+    ],
+    [
+      "esp:D25",
+      "b3:1.l",
+      "yellow",
+      []
+    ],
+    [
+      "b3:2.l",
+      "esp:GND.1",
+      "black",
+      []
+    ],
+    [
+      "esp:D27",
+      "stop:2",
+      "orange",
+      []
+    ],
+    [
+      "stop:1",
+      "esp:GND.1",
+      "black",
+      []
+    ],
+    [
+      "stop:3",
+      "esp:3V3",
+      "red",
+      []
+    ],
+    [
+      "esp:D18",
+      "drv:STEP",
+      "green",
+      []
+    ],
+    [
+      "esp:D19",
+      "drv:DIR",
+      "blue",
+      []
+    ],
+    [
+      "esp:D26",
+      "drv:ENABLE",
+      "orange",
+      []
+    ],
+    [
+      "esp:3V3",
+      "drv:VDD",
+      "red",
+      []
+    ],
+    [
+      "esp:GND.2",
+      "drv:GND",
+      "black",
+      []
+    ],
+    [
+      "esp:3V3",
+      "drv:RESET",
+      "red",
+      []
+    ],
+    [
+      "esp:3V3",
+      "drv:SLEEP",
+      "red",
+      []
+    ],
+    [
+      "drv:2A",
+      "motor:A+",
+      "green",
+      []
+    ],
+    [
+      "drv:2B",
+      "motor:A-",
+      "blue",
+      []
+    ],
+    [
+      "drv:1A",
+      "motor:B+",
+      "orange",
+      []
+    ],
+    [
+      "drv:1B",
+      "motor:B-",
+      "purple",
+      []
+    ],
+    [
+      "esp:D16",
+      "r1:1",
+      "green",
+      []
+    ],
+    [
+      "r1:2",
+      "verde:A",
+      "green",
+      []
+    ],
+    [
+      "verde:C",
+      "esp:GND.2",
+      "black",
+      []
+    ],
+    [
+      "esp:D17",
+      "r2:1",
+      "red",
+      []
+    ],
+    [
+      "r2:2",
+      "rojo:A",
+      "red",
+      []
+    ],
+    [
+      "rojo:C",
+      "esp:GND.2",
+      "black",
+      []
+    ]
+  ],
+  "serialMonitor": {
+    "display": "always",
+    "newline": "lf"
+  },
+  "dependencies": {}
+}

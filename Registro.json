@@ -1,0 +1,219 @@
+[
+  {
+    "id": "tab_prueba_elevador_30",
+    "type": "tab",
+    "label": "Prueba 30 minutos - Elevador",
+    "disabled": false,
+    "info": "Registra intervalos entre mensajes recibidos; no mide latencia comando-respuesta."
+  },
+  {
+    "id": "broker_prueba_30",
+    "type": "mqtt-broker",
+    "name": "Broker de pruebas EMQX",
+    "broker": "broker.emqx.io",
+    "port": "1883",
+    "clientid": "",
+    "autoConnect": true,
+    "usetls": false,
+    "protocolVersion": "4",
+    "keepalive": "60",
+    "cleansession": true,
+    "autoUnsubscribe": true,
+    "birthTopic": "",
+    "birthQos": "0",
+    "birthPayload": "",
+    "closeTopic": "",
+    "closeQos": "0",
+    "closePayload": "",
+    "willTopic": "",
+    "willQos": "0",
+    "willPayload": ""
+  },
+  {
+    "id": "mqtt_prueba_30",
+    "type": "mqtt in",
+    "z": "tab_prueba_elevador_30",
+    "name": "Datos Wokwi para medicion",
+    "topic": "elevador/isc2026/equipo01/estado",
+    "qos": "0",
+    "datatype": "utf8",
+    "broker": "broker_prueba_30",
+    "nl": false,
+    "rap": true,
+    "rh": 0,
+    "inputs": 0,
+    "x": 170,
+    "y": 140,
+    "wires": [
+      [
+        "json_prueba_30"
+      ]
+    ]
+  },
+  {
+    "id": "json_prueba_30",
+    "type": "json",
+    "z": "tab_prueba_elevador_30",
+    "name": "JSON a objeto",
+    "property": "payload",
+    "action": "obj",
+    "pretty": false,
+    "x": 380,
+    "y": 140,
+    "wires": [
+      [
+        "validar_prueba_30"
+      ]
+    ]
+  },
+  {
+    "id": "validar_prueba_30",
+    "type": "function",
+    "z": "tab_prueba_elevador_30",
+    "name": "Registrar pruebas 30 min",
+    "func": "// Registro experimental: intervalos MQTT, no latencia de red.\nif (msg.reset) { context.set('s',null); node.status({fill:'grey',shape:'ring',text:'Listo para iniciar'}); return [null,{payload:'CONTADOR REINICIADO'}]; }\nconst d = msg.payload;\nif (!d || typeof d !== 'object' || !Number.isFinite(Number(d.posicion))) return null;\nconst now = Date.now();\nlet s = context.get('s');\nif (!s || msg.reset) s = {inicio:now, previo:null, n:0, huecos:0, cambios:0, ultimoEstado:null, maxIntervalo:0, anomalias:0};\nif (now-s.inicio > 30*60*1000) {\n    if (!s.terminado) { s.terminado=true; node.status({fill:'green',shape:'ring',text:'30 min completados'}); context.set('s',s); return [null,{payload:{resultado:'FIN',muestras:s.n,huecos_mayor_2s:s.huecos,cambios_estado:s.cambios,intervalo_max_ms:s.maxIntervalo,anomalias:s.anomalias}}]; }\n    return null;\n}\nlet intervalo = s.previo===null ? null : now-s.previo;\nif (intervalo!==null) {\n  s.maxIntervalo=Math.max(s.maxIntervalo,intervalo);\n  if (intervalo>2000) s.huecos++;\n}\nif (s.ultimoEstado!==null && s.ultimoEstado!==d.estado) s.cambios++;\nif (![1,2,3].includes(Number(d.piso)) || ![1,2,3].includes(Number(d.destino)) || Number(d.posicion)<0 || Number(d.posicion)>400) s.anomalias++;\ns.n++; s.previo=now; s.ultimoEstado=d.estado;\ncontext.set('s',s);\nconst elapsed=((now-s.inicio)/60000).toFixed(2);\nnode.status({fill:'blue',shape:'dot',text:`${elapsed} min | ${s.n} muestras | ${s.huecos} huecos`});\nconst header = s.n===1 ? 'fecha_utc,minutos,piso,destino,estado,posicion,emergencia,tiempo_esp_ms,intervalo_recibido_ms,huecos,anomalias\\n' : '';\nconst line=header+[new Date(now).toISOString(),elapsed,d.piso,d.destino,d.estado,d.posicion,d.emergencia, d.tiempo_ms,intervalo===null?'':intervalo,s.huecos,s.anomalias].join(',')+'\\n';\nreturn [{payload:line,filename:'elevador_prueba_30min.csv'}, {payload:{minutos:elapsed,muestras:s.n,huecos_mayor_2s:s.huecos,intervalo_max_ms:s.maxIntervalo,cambios_estado:s.cambios,anomalias:s.anomalias}}];",
+    "outputs": 2,
+    "timeout": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 600,
+    "y": 140,
+    "wires": [
+      [
+        "archivo_prueba_30"
+      ],
+      [
+        "debug_prueba_30"
+      ]
+    ]
+  },
+  {
+    "id": "archivo_prueba_30",
+    "type": "file",
+    "z": "tab_prueba_elevador_30",
+    "name": "Guardar CSV (configurado)",
+    "filename": "elevador_prueba_30min.csv",
+    "filenameType": "str",
+    "appendNewline": false,
+    "createDir": false,
+    "overwriteFile": "false",
+    "encoding": "none",
+    "x": 860,
+    "y": 110,
+    "wires": [
+      []
+    ]
+  },
+  {
+    "id": "debug_prueba_30",
+    "type": "debug",
+    "z": "tab_prueba_elevador_30",
+    "name": "Resumen de prueba",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 830,
+    "y": 170,
+    "wires": []
+  },
+  {
+    "id": "reset_prueba_30",
+    "type": "inject",
+    "z": "tab_prueba_elevador_30",
+    "name": "REINICIAR conteo (antes de comenzar)",
+    "props": [
+      {
+        "p": "reset",
+        "v": "true",
+        "vt": "bool"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "x": 235,
+    "y": 235,
+    "wires": [
+      [
+        "validar_prueba_30"
+      ]
+    ]
+  },
+  {
+    "id": "http_descargar_csv_elevador",
+    "type": "http in",
+    "z": "tab_prueba_elevador_30",
+    "name": "DESCARGAR CSV desde navegador",
+    "url": "/elevador/descargar-csv",
+    "method": "get",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 210,
+    "y": 345,
+    "wires": [
+      [
+        "leer_csv_descarga"
+      ]
+    ]
+  },
+  {
+    "id": "leer_csv_descarga",
+    "type": "file in",
+    "z": "tab_prueba_elevador_30",
+    "name": "Leer CSV guardado",
+    "filename": "elevador_prueba_30min.csv",
+    "filenameType": "str",
+    "format": "",
+    "chunk": false,
+    "sendError": false,
+    "encoding": "none",
+    "allProps": false,
+    "x": 470,
+    "y": 345,
+    "wires": [
+      [
+        "headers_csv_descarga"
+      ]
+    ]
+  },
+  {
+    "id": "headers_csv_descarga",
+    "type": "function",
+    "z": "tab_prueba_elevador_30",
+    "name": "Forzar descarga CSV",
+    "func": "msg.headers = {'Content-Type':'text/csv; charset=utf-8', 'Content-Disposition':'attachment; filename=\"elevador_prueba_30min.csv\"', 'Cache-Control':'no-store'}; return msg;",
+    "outputs": 1,
+    "timeout": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 705,
+    "y": 345,
+    "wires": [
+      [
+        "respuesta_csv_descarga"
+      ]
+    ]
+  },
+  {
+    "id": "respuesta_csv_descarga",
+    "type": "http response",
+    "z": "tab_prueba_elevador_30",
+    "name": "Descarga en Chrome",
+    "statusCode": "",
+    "headers": {},
+    "x": 960,
+    "y": 345,
+    "wires": []
+  }
+]
